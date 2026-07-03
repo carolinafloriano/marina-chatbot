@@ -98,6 +98,16 @@ npm run dev
 
 O backend arranca em `http://localhost:3001`.
 
+#### Testar sem chave de API nem custos (modo demo)
+
+Chamadas reais à API da Anthropic são pagas (embora muito baratas para testes — normalmente frações de cêntimo por mensagem). Se quiser testar toda a interface sem criar conta/chave nem gastar nada, defina no `.env`:
+
+```
+DEMO_MODE=true
+```
+
+Com isto, o backend deixa de chamar a Anthropic e responde com texto simulado (correspondência simples de palavras-chave em `server/demoResponses.js`), mantendo o mesmo atraso realista para o indicador "a escrever". Serve para validar o fluxo da conversa, a interface e o comportamento de erro — não reflete a qualidade real das respostas da Marina. Para usar o modelo real, basta voltar a pôr `DEMO_MODE=false` (ou remover a linha) e configurar a `ANTHROPIC_API_KEY`.
+
 ### 2. Frontend
 
 Noutro terminal:

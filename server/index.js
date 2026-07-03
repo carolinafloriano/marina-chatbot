@@ -3,17 +3,26 @@ import express from "express";
 import cors from "cors";
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
+import { getDemoReply } from "./demoResponses.js";
 
 const PORT = process.env.PORT || 3001;
 const MODEL = "claude-sonnet-4-6";
 
-if (!process.env.ANTHROPIC_API_KEY) {
+// Modo demo: simula respostas sem chamar a API da Anthropic, para testar a
+// interface sem custos nem chave de API. Ativar com DEMO_MODE=true no .env.
+const DEMO_MODE = process.env.DEMO_MODE === "true";
+
+if (DEMO_MODE) {
+  console.log(
+    "[marina-server] MODO DEMO ativo — a responder com dados simulados, sem chamar a API da Anthropic."
+  );
+} else if (!process.env.ANTHROPIC_API_KEY) {
   console.warn(
-    "[marina-server] Aviso: ANTHROPIC_API_KEY não está definida. Configure-a no ficheiro .env antes de usar o chat."
+    "[marina-server] Aviso: ANTHROPIC_API_KEY não está definida. Configure-a no ficheiro .env, ou defina DEMO_MODE=true para testar sem chave."
   );
 }
 
-const anthropic = new Anthropic(); // lê ANTHROPIC_API_KEY do ambiente
+const anthropic = DEMO_MODE ? null : new Anthropic(); // lê ANTHROPIC_API_KEY do ambiente
 
 const app = express();
 app.use(cors());
@@ -48,6 +57,17 @@ app.post("/api/chat", async (req, res) => {
   // Mantém apenas o histórico mais recente para controlar custo/latência.
   const trimmedMessages = messages.slice(-MAX_HISTORY_MESSAGES);
 
+  if (DEMO_MODE) {
+    const lastUserMessage = [...trimmedMessages].reverse().find((m) => m.role === "user");
+    const delay = 500 + Math.random() * 700; // simula latência real para o indicador "a escrever"
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return res.json({
+      reply: getDemoReply(lastUserMessage?.content ?? ""),
+      stopReason: "end_turn",
+      demo: true,
+    });
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -80,7 +100,7 @@ app.post("/api/chat", async (req, res) => {
 });
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", model: MODEL });
+  res.json({ status: "ok", model: MODEL, demoMode: DEMO_MODE });
 });
 
 app.listen(PORT, () => {
