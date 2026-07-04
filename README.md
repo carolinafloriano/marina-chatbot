@@ -4,6 +4,8 @@ Aplicação de demonstração: um chatbot de apoio ao cliente para uma empresa f
 
 A assistente chama-se **Marina**, responde em português ou inglês consoante o idioma do utilizador, e conhece apenas a informação (fictícia) definida no *system prompt* do backend.
 
+🔗 **Demo ao vivo:** https://carolinafloriano.github.io/marina-chatbot/ (versão estática, em modo demo — respostas simuladas, sem ligação real à API)
+
 ---
 
 ## Arquitetura
@@ -122,19 +124,6 @@ npm run dev
 O frontend arranca em `http://localhost:5173` e encaminha automaticamente os pedidos `/api/*` para o backend (ver `vite.config.js`).
 
 Abra `http://localhost:5173` no browser e converse com a Marina.
-
----
-
-## Deploy no GitHub Pages
-
-O GitHub Pages só serve ficheiros estáticos — não consegue correr o backend Express. Por isso, o `client` tem um **modo demo embutido no próprio frontend** (`client/src/demoResponses.js`), que responde com texto simulado por correspondência de palavras-chave, sem precisar de nenhum servidor nem chave de API.
-
-O workflow em `.github/workflows/deploy-pages.yml` faz build automático do `client` (com `VITE_DEMO_MODE=true`) e publica-o no Pages a cada push para `main` que altere ficheiros em `client/`. Para ativar:
-
-1. No repositório GitHub: **Settings → Pages → Source → GitHub Actions**.
-2. Fazer push para `main` (ou correr o workflow manualmente em **Actions**).
-
-A versão publicada no Pages é sempre a demo (respostas simuladas) — serve para mostrar a interface e o fluxo da conversa, não a Marina real. Para a versão com a API da Anthropic a funcionar de verdade, é preciso correr o `server` (localmente ou noutro serviço com suporte a Node, como Render ou Railway) e apontar o frontend para lá.
 
 ---
 
