@@ -4,6 +4,9 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Caminhos relativos para os assets funcionarem em qualquer subpasta,
+  // incluindo o GitHub Pages (ex. https://<user>.github.io/<repo>/).
+  base: "./",
   server: {
     port: 5173,
     proxy: {

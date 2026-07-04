@@ -17,6 +17,7 @@ marina-chatbot/
 └── client/               Frontend React (Vite)
     └── src/
         ├── App.jsx              Estado da conversa + chamada à API
+        ├── demoResponses.js     Modo demo embutido (usado no build para GitHub Pages)
         └── components/
             ├── Header.jsx
             ├── ChatWindow.jsx
@@ -124,23 +125,16 @@ Abra `http://localhost:5173` no browser e converse com a Marina.
 
 ---
 
-## Publicar no GitHub (git init e push)
+## Deploy no GitHub Pages
 
-Este diretório ainda não é um repositório git. Para o inicializar e publicar:
+O GitHub Pages só serve ficheiros estáticos — não consegue correr o backend Express. Por isso, o `client` tem um **modo demo embutido no próprio frontend** (`client/src/demoResponses.js`), que responde com texto simulado por correspondência de palavras-chave, sem precisar de nenhum servidor nem chave de API.
 
-```bash
-# a partir da raiz do projeto (marina-chatbot/)
-git init
-git add .
-git commit -m "Chatbot Marina - Atlântico Tours"
+O workflow em `.github/workflows/deploy-pages.yml` faz build automático do `client` (com `VITE_DEMO_MODE=true`) e publica-o no Pages a cada push para `main` que altere ficheiros em `client/`. Para ativar:
 
-# crie um repositório vazio no GitHub e depois:
-git remote add origin https://github.com/<o-seu-utilizador>/<nome-do-repo>.git
-git branch -M main
-git push -u origin main
-```
+1. No repositório GitHub: **Settings → Pages → Source → GitHub Actions**.
+2. Fazer push para `main` (ou correr o workflow manualmente em **Actions**).
 
-O ficheiro `.gitignore` já exclui `node_modules/`, ficheiros `.env` e outros artefactos locais, para que a chave da API nunca seja acidentalmente enviada para o repositório.
+A versão publicada no Pages é sempre a demo (respostas simuladas) — serve para mostrar a interface e o fluxo da conversa, não a Marina real. Para a versão com a API da Anthropic a funcionar de verdade, é preciso correr o `server` (localmente ou noutro serviço com suporte a Node, como Render ou Railway) e apontar o frontend para lá.
 
 ---
 
